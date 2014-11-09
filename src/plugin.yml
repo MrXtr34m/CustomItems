@@ -6,6 +6,6 @@ description: Created by MrXtr34m not for public usage
 
 commands:
     customitems:
-     usage: /<loginvanish> <true|false|kickall>
+     usage: /customitem <give|current|list|remove>
      description: Modifying items 
      aliases: [customitems, customitem, ci]

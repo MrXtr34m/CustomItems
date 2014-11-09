@@ -237,6 +237,9 @@ public class CommandExecutor implements org.bukkit.command.CommandExecutor {
 				}
 				Utils.sendMsg(p, finalString);
 				return true;
+			}else {
+				Utils.sendGlobalHelp(p);
+				return true;
 			}
 		}
 		return false;

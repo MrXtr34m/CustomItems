@@ -47,7 +47,9 @@ public class Utils {
 	}
 	public static void sendGlobalHelp(Player p){
 		p.sendMessage(Utils.centerText("§6------------§cCustom Items§c------------"));
-		p.sendMessage("§9/ci current <name|addEnchant|addlore|addconfig>");
+		p.sendMessage("§9/ci current §c<name|addEnchant|addlore|addconfig>");
+		p.sendMessage("§9/ci give §c<name>");
+		p.sendMessage("§9/ci list");
 		p.sendMessage(Utils.centerText("§6------------------------------------"));
 	}
 	public static void sendNameHelp(Player p){
@@ -57,7 +59,7 @@ public class Utils {
 		p.sendMessage("§9/ci current addEnchant §c<Enchant> <levels>");
 	}
 	public static void sendAddLore(Player p){
-		p.sendMessage("§9/ci current setLore §c<lineNumber> <Text>");
+		p.sendMessage("§9/ci current setLore §c<lineNumber|next> <Text>");
 	}
 	public static void saveItem(String name, ItemStack item, Player p){
 		FileConfiguration config = plugin.getConfig();
