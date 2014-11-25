@@ -4,13 +4,17 @@ import java.util.HashMap;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import fr.mrxtr34m.customitem.utils.ConfigUtils;
+import fr.mrxtr34m.customitem.utils.Utils;
 
 public class Main extends JavaPlugin{
 	private CommandExecutor executor;
 	private TabComplete tabComplete;
-	public HashMap<String, org.bukkit.inventory.ItemStack> items = new HashMap<>();
+	public HashMap<String, ItemStack> items = new HashMap<>();
+	public ConfigUtils cfg;
 	@Override
 	public void onEnable() {
 		Utils.setMain(this);
@@ -19,22 +23,24 @@ public class Main extends JavaPlugin{
 		Bukkit.getServer().getPluginManager().registerEvents(new Listeners(this), this);
 		getCommand("customitems").setExecutor(executor);
 		getCommand("customitems").setTabCompleter(tabComplete);
+		cfg = new ConfigUtils(this);
 		setList();
 		saveDefaultConfig();
 		Utils.log(Level.INFO, "Has succesfully enabled");
+		
 	}
 	@Override
 	public void onDisable() {
 		Utils.log(Level.INFO, "Has succesfully disabled");
 	}
-	public HashMap<String, org.bukkit.inventory.ItemStack> setList(){
+	public HashMap<String, ItemStack> setList(){
 		items.clear();
 		for(String s :Utils.getItemsList()){
-			ItemStack lel = new ItemStack(this, s);
-			org.bukkit.inventory.ItemStack item = lel.getItemStack();
+			ItemStack item = ConfigUtils.getItemStack(s, getConfig());
 			items.put(s, item);
 		}
 		Utils.setItems(items);
 		return items;
 	}
+	
 }

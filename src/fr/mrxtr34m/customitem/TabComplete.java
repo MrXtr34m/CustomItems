@@ -11,6 +11,8 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 
+import fr.mrxtr34m.customitem.utils.Utils;
+
 public class TabComplete implements TabCompleter {
 
 	@Override
@@ -20,7 +22,7 @@ public class TabComplete implements TabCompleter {
 			Player p = (Player) sender;
 			if (args.length == 1) {
 				ArrayList<String> valid = new ArrayList<>();
-				List<String> array = Arrays.asList("current","give","remove","list");
+				List<String> array = Arrays.asList("current","give","remove","list","info");
 				if(!args[0].equals("")){
 					for(String value : array){
 						if(value.startsWith(args[0].toLowerCase())){
@@ -37,7 +39,7 @@ public class TabComplete implements TabCompleter {
 			}
 			if (args[0].equalsIgnoreCase("current")) {
 				if (args.length == 2){
-					List<String> array = Arrays.asList("name", "addLore", "addEnchant","addConfig");
+					List<String> array = Arrays.asList("name", "addLore", "addEnchant","addConfig", "info");
 					ArrayList<String> arg = new ArrayList<>();
 					if(args[1].equals("")){
 						for(String value : array){
@@ -88,44 +90,36 @@ public class TabComplete implements TabCompleter {
 				}
 			}else if (args[0].equalsIgnoreCase("give")) {
 				if(args.length == 2){
-					ArrayList<String> validItems = new ArrayList<>();
-					List<String> available = Utils.getItemsList();
-					if(!args.equals("")){
-						for(String item : available){
-							if(item.toLowerCase().startsWith(args[1])){
-								validItems.add(item);
-							}
-						}
-					}else {
-						for(String item : available){
-							validItems.add(item);
-						}
-					}
-					Collections.sort(validItems);
-					return validItems;
+					return items(args[1]);
 				}
 				
 			}else if (args[0].equalsIgnoreCase("remove")) {
 				if(args.length == 2){
-					ArrayList<String> validItems = new ArrayList<>();
-					List<String> available = Utils.getItemsList();
-					if(!args.equals("")){
-						for(String item : available){
-							if(item.toLowerCase().startsWith(args[1])){
-								validItems.add(item);
-							}
-						}
-					}else {
-						for(String item : available){
-							validItems.add(item);
-						}
-					}
-					Collections.sort(validItems);
-					return validItems;
+					return items(args[1]);
+				}
+			}else if (args[0].equalsIgnoreCase("info")) {
+				if(args.length == 2){
+					return items(args[1]);
 				}
 			}
 		}
 		return null;
 	}
-
+	public ArrayList<String> items(String string){
+		ArrayList<String> validItems = new ArrayList<>();
+		List<String> available = Utils.getItemsList();
+		if(!string.equals("")){
+			for(String item : available){
+				if(item.toLowerCase().startsWith(string)){
+					validItems.add(item);
+				}
+			}
+		}else {
+			for(String item : available){
+				validItems.add(item);
+			}
+		}
+		Collections.sort(validItems);
+		return validItems;
+	}
 }

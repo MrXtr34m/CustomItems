@@ -1,11 +1,11 @@
 package fr.mrxtr34m.customitem;
 
+import java.awt.Color;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 
-import org.bukkit.ChatColor;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -14,6 +14,10 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.LeatherArmorMeta;
+
+import fr.mrxtr34m.customitem.utils.ConfigUtils;
+import fr.mrxtr34m.customitem.utils.Utils;
 
 public class CommandExecutor implements org.bukkit.command.CommandExecutor {
 	
@@ -33,11 +37,17 @@ public class CommandExecutor implements org.bukkit.command.CommandExecutor {
 				return true;
 			}
 			if(args[0].equalsIgnoreCase("current")){
+				if(!(s instanceof ConsoleCommandSender)){
+					
 				if(args.length == 1){
 					Utils.sendGlobalHelp(p);
 					return true;
 				}
+				}
 				if(args[1].equals("name")){
+					if(!Utils.isPlayerHasPermissions(p, "name")){
+						return true;
+					}
 					ItemStack current = p.getItemInHand();
 					if(!Utils.isItemStackIsValid(current)){
 						Utils.sendError(p, "There is no item in your hand !");
@@ -64,8 +74,11 @@ public class CommandExecutor implements org.bukkit.command.CommandExecutor {
 					p.setItemInHand(current);
 					return true;
 				}else if (args[1].equalsIgnoreCase("addenchant") ||args[1].equalsIgnoreCase("addenchantement") ) {
+					if(!Utils.isPlayerHasPermissions(p, "addenchant")){
+						return true;
+					}
 					if(args.length == 2 || args.length >= 5){
-						Utils.sendError(p, "§9/ci current addenchant <enchant> <level>");
+						Utils.sendError(p, "§9/ci current addenchant §c<enchant> <level>");
 						return true;
 					}
 					ItemStack current = p.getItemInHand();
@@ -105,6 +118,9 @@ public class CommandExecutor implements org.bukkit.command.CommandExecutor {
 					p.getInventory().setItemInHand(current);
 					 return true;
 				}else if (args[1].equalsIgnoreCase("addlore")) {
+					if(!Utils.isPlayerHasPermissions(p, "addlore")){
+						return true;
+					}
 					if(args.length == 3 || args.length == 2){
 						Utils.sendAddLore(p);
 						return true;
@@ -148,6 +164,7 @@ public class CommandExecutor implements org.bukkit.command.CommandExecutor {
 							Utils.sendError(p, "The line number can't be set (size of lore =§7"+lore.size()+"§c)");
 							return true;
 						}try {
+							@SuppressWarnings("unused")
 							String m = lore.get(line);
 						} catch (IndexOutOfBoundsException e) {
 							lore.add(text);
@@ -182,6 +199,9 @@ public class CommandExecutor implements org.bukkit.command.CommandExecutor {
 					return true;
 				}
 				else if (args[1].equalsIgnoreCase("addConfig")) {
+					if(!Utils.isPlayerHasPermissions(p, "addConfig")){
+						return true;
+					}
 					if(args.length <= 2 || args[2].equalsIgnoreCase("config")){
 						Utils.sendError(p, "You must specify a name");
 						return true;
@@ -191,18 +211,76 @@ public class CommandExecutor implements org.bukkit.command.CommandExecutor {
 						return true;
 					}
 					String name = args[2];
-					Utils.saveItem(name, p.getItemInHand(), p);
+					ConfigUtils.saveItem(name, p.getItemInHand(), p);
 					plugin.setList();
 					return true;
 					
+				}else if (args[1].equalsIgnoreCase("info")) {
+					if(!Utils.isPlayerHasPermissions(p, "info")){
+						return true;
+					}
+					if(!Utils.isItemStackIsValid(p.getItemInHand())){
+						Utils.sendError(p, "There is no item in your hand !");
+						return true;
+					}
+					Utils.getInformationForItemStack(p.getItemInHand(), p);
+					return true;
+
+			}else if (args[1].equalsIgnoreCase("leatherArmor")) {
+				if(args.length <= 4){
+					return false;
 				}
+				ItemStack lele = p.getItemInHand();
+				Material is = p.getItemInHand().getType();
+				if(is == Material.LEATHER_BOOTS || is == Material.LEATHER_CHESTPLATE || is == Material.LEATHER_LEGGINGS || is == Material.LEATHER_HELMET){
+					LeatherArmorMeta armor = (LeatherArmorMeta) p.getItemInHand().getItemMeta();
+					org.bukkit.Color lel = org.bukkit.Color.fromRGB(Integer.parseInt(args[2]), Integer.parseInt(args[3]), Integer.parseInt(args[4]));
+					armor.setColor(lel);
+					lele.setItemMeta(armor);
+					p.setItemInHand(lele);
+					return true;
+				}
+			}
 			}else if (args[0].equalsIgnoreCase("give")) {
+				if(!Utils.isPlayerHasPermissions(p, "give")){
+					return true;
+				}
 				if(args.length <= 1 ||! Utils.getItemsList().contains(args[1])){
-					Utils.sendError(p, "You must specify a valid name");
+					Utils.sendError(p, "§9/ci give §c<item> §7[Player] [amount]");
 					return true;
 				}
 				plugin.setList();
 				ItemStack item = Utils.getItemStack(args[1]);
+				if(args.length >= 2){
+					try {
+						@SuppressWarnings("deprecation")
+						Player target = Bukkit.getPlayer(args[2]);
+						if(p != null){
+							int number = 0;
+							if(args.length >= 4){
+								 number = Integer.parseInt(args[3]);
+								 item.setAmount(number);
+							}
+								if(target.getInventory().firstEmpty() == -1){
+									Utils.sendMsg(target, "An item has been gived by §c"+p.getName());
+									target.getWorld().dropItem(target.getLocation(), item);
+									Utils.sendMsg(p, "Your item has been droped in the ground beacuse you don't have enought space in your inventory");
+									return true;
+								}else {
+									target.getInventory().addItem(item);
+									Utils.sendMsg(target, "An item has been gived by §c"+p.getName());
+									return true;
+								}
+							
+						}else {
+							Utils.sendMsg(p, "The player §c"+args[2]+" §6is not online");
+						}
+					} catch (NumberFormatException e) {
+						Utils.sendMsg(p, "This is not a valid number");
+					}catch (Exception e) {
+						
+					}
+				}
 				p.getInventory().addItem(item);
 				String name = item.getItemMeta().getDisplayName();
 				if(name != null)
@@ -227,22 +305,31 @@ public class CommandExecutor implements org.bukkit.command.CommandExecutor {
 				}
 				for (int i = 0; i < list.size(); i++) {
 					if(finalString == null){
-						finalString = "§r"+list.get(i)+",";
+						finalString = "§r"+list.get(i)+", ";
 					}else {
-						if(i == list.size()){
+						if(i == list.size()-1){
 							finalString = finalString+list.get(i);
 						}else
-						finalString = finalString+list.get(i)+",";
+						finalString = finalString+list.get(i)+", ";
 					}
 				}
 				Utils.sendMsg(p, finalString);
 				return true;
+			}else if (args[0].equalsIgnoreCase("info")) {
+				if(args.length <= 1 || !Utils.getItemsList().contains(args[1])){
+					Utils.sendMsg(p, "You must specify a valid name");
+					return true;
+				}if(args.length == 2){
+					Utils.getInformationForItemStack(Utils.getItemStack(args[1]), p);
+					return true;
+				}
 			}else {
 				Utils.sendGlobalHelp(p);
 				return true;
 			}
-		}
+		return false;
+	}else {
 		return false;
 	}
-
+}
 }
