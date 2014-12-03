@@ -2,7 +2,6 @@ name: CustomItems
 main: fr.mrxtr34m.customitem.Main
 version: 1.0.0
 author: MrXtr34m
-description: Created by MrXtr34m not for public usage
 
 commands:
     customitems:

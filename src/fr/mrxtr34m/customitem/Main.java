@@ -7,6 +7,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import fr.mrxtr34m.customitem.file.ConfigFileUtils;
+import fr.mrxtr34m.customitem.file.ConfigfileManager;
 import fr.mrxtr34m.customitem.utils.ConfigUtils;
 import fr.mrxtr34m.customitem.utils.Utils;
 
@@ -15,8 +17,10 @@ public class Main extends JavaPlugin{
 	private TabComplete tabComplete;
 	public HashMap<String, ItemStack> items = new HashMap<>();
 	public ConfigUtils cfg;
+	public ConfigfileManager manager;
 	@Override
 	public void onEnable() {
+		ConfigFileUtils.setMain(this);
 		Utils.setMain(this);
 		executor = new CommandExecutor(this);
 		tabComplete = new TabComplete();
@@ -27,7 +31,7 @@ public class Main extends JavaPlugin{
 		setList();
 		saveDefaultConfig();
 		Utils.log(Level.INFO, "Has succesfully enabled");
-		
+		manager = new ConfigfileManager(this);
 	}
 	@Override
 	public void onDisable() {
@@ -41,6 +45,9 @@ public class Main extends JavaPlugin{
 		}
 		Utils.setItems(items);
 		return items;
+	}
+	public ConfigfileManager getFileConfigManager(){
+		return manager;
 	}
 	
 }

@@ -65,9 +65,9 @@ public class Utils {
 	public static List<String> getItemsList(){
 		List<String> list = new ArrayList<>();
 		for(String key : plugin.getConfig().getKeys(false)){
-			if(key != "config"){
+			if(!key.startsWith("invento")){
 				list.add(key);
-			}
+			}else Bukkit.broadcastMessage("dldllddl");
 		}
 		return list;
 		}

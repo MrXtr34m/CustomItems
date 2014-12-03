@@ -1,10 +1,11 @@
 package fr.mrxtr34m.customitem.utils;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -23,6 +24,7 @@ public class ConfigUtils {
 	}
 	
 	public static ItemStack getItemStack(String name, FileConfiguration config){
+		config = plugin.getConfig();
 		ItemStack is = getRawItem(name, config);
 		ItemMeta im = is.getItemMeta();
 		if(hasDisplayName(name, config))im = setName(name, config, im);
@@ -31,8 +33,7 @@ public class ConfigUtils {
 		if(im != null)is.setItemMeta(im);
 		return is;
 	}
-	public static void saveItem(String name, ItemStack item, Player p){
-		FileConfiguration config = plugin.getConfig();
+	public static void saveItem(String name, ItemStack item, Player p, FileConfiguration config){
 		if(config.contains(name)){
 			Utils.sendMsg(p, "The item "+name+" has been overwrited");
 			config.set(name, null);
